@@ -22,17 +22,14 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - name: Instalar dependencias
-        run: npm ci
-
+      - uses: actions/checkout@v3
       - name: Run test
         uses: actions/setup-node@v4
         with:
           node-version: "20"
 
-      - name: Ejecutar pruebas unitarias
-        run: npm install
-        run: npm run test
+      - run: npm install
+      - run: npm run test
 
   codeScan:
     name: SonarCloud Scan
