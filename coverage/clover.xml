@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1786725695558" clover="3.2.0">
-  <project timestamp="1786725695558" name="All files">
+<coverage generated="1786726040697" clover="3.2.0">
+  <project timestamp="1786726040698" name="All files">
     <metrics statements="6" coveredstatements="6" conditionals="4" coveredconditionals="4" methods="2" coveredmethods="2" elements="12" coveredelements="12" complexity="0" loc="6" ncloc="6" packages="1" files="1" classes="1"/>
     <file name="utils.js" path="/home/azureuser/practica_auto/frontend-practica/utils.js">
       <metrics statements="6" coveredstatements="6" conditionals="4" coveredconditionals="4" methods="2" coveredmethods="2"/>
