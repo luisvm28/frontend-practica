@@ -10,23 +10,52 @@ on:
 
 
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
-    steps:
-    
+    steps:    
     - name: Checkout del código
       uses: actions/checkout@v4
 
-    - name: Configurar Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20' # Puedes ajustar la versión de Node.js si es necesario
-        cache: 'npm'
 
+  test:
+    name: Run tests
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Instalar dependencias
+        run: npm ci
 
-    - name: Instalar dependencias
-      run: npm ci
+      - name: Run test
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
 
+      - name: Ejecutar pruebas unitarias
+        run: npm install
+        run: npm run test
 
-    - name: Ejecutar pruebas unitarias
-      run: npm run test
+  codeScan:
+    name: SonarCloud Scan
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN}}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          args: >
+            -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }}
+            -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
+
+      - name: Get SonarCloud status
+        run: |
+          echo "SONAR_STATUS=$(curl -s -u ${{ secrets.SONAR_TOKEN}}: https://sonarcloud.io/api/qualitygates/project_status?projectKey=${{ secrets.SONAR_PROJECT_KEY }} | jq -r '.projectStatus.status')" >> $GITHUB_ENV
+
+      - name: Sonar Status
+        run: echo ${{ env.SONAR_STATUS }}
+
+      - name: Check Status
+        if: ${{ env.SONAR_STATUS == 'ERROR' }}
+        run: echo "Problemas de seguridad encontrados... "
