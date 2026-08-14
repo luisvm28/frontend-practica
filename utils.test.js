@@ -17,7 +17,7 @@ describe('Pruebas unitarias de utils.js', () => {
       // ESTA PRUEBA FALLA A PROPÓSITO:
       // La función retorna 'Error', pero el test espera 'Fallo'
       // El estudiante debe corregir la expectativa o la función.
-      expect(calculateStatus(50)).toBe('Fallo');
+      expect(calculateStatus(50)).toBe('Error');
     });
   });
 
