@@ -9,7 +9,7 @@ on:
       - main
 
 env:
-  DOCKER_IMAGE: ${{ secrets.DOCKER_HUB_USER }}/frontend-practica
+  IMAGE_NAME: ${{ secrets.DOCKER_HUB_USER }}/frontend-practica
   IMAGE_TAG: v1.0.0-practica
   DOCKER_REGISTRY: toposx28
 
