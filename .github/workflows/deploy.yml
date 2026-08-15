@@ -26,14 +26,30 @@ jobs:
         username: ${{ secrets.DOCKER_USER }}
         password: ${{ secrets.DOCKER_PASSWORD }}
 
-    - name: Build + Push
-      uses: docker/build-push-action@v3
+    # 1. Agrega un paso en el workflow para construir la imagen de Docker.
+    - name: Construir la imagen de Docker
+      run: |
+        docker build --build-arg APP_ENV=${{ secrets.APP_ENV }} -t ${{ env.IMAGE_NAME }} .
+
+    # 2. Agrega un paso en el workflow para etiquetar la imagen de Docker. 
+    - name: Etiquetar la imagen de Docker
+      run: |
+        docker tag ${{ env.IMAGE_NAME }} ${{ secrets.DOCKER_USER }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+
+    # 4 Agrega un paso en el workflow para escanear la imagen de Docker usando Trivy.
+    - name: Escanear imagen de Docker con Trivy
+      uses: aquasecurity/trivy-action@master
       with:
-        push: true
-        tags: ${{ secrets.DOCKER_USER }}/${{ env.IMAGE_NAME }}:latest
-        build-args: |
-          APP_ENV=${{ secrets.APP_ENV }}
-            
+        image-ref: '${{ secrets.DOCKER_USER }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}'
+        format: 'table'
+        exit-code: '1'
+        severity: 'CRITICAL,HIGH'
+
+    # 3 Agrega un paso en el workflow para subir la imagen de Docker a Docker Hub.
+    - name: Subir la imagen de Docker a Docker Hub
+      run: |
+        docker push ${{ secrets.DOCKER_USER }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+
   test:
     name: Run tests
     needs: build
