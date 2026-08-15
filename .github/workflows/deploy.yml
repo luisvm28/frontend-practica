@@ -74,27 +74,27 @@ jobs:
         if: ${{ env.SONAR_STATUS == 'ERROR' }}
         run: echo "Problemas de seguridad encontrados... "
 
-security-SNYK:
-    name: Snyk Security Scan
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Checkout del código
-        uses: actions/checkout@v4
+  security-SNYK:
+      name: Snyk Security Scan
+      runs-on: ubuntu-latest
+      needs: build
+      steps:
+        - name: Checkout del código
+          uses: actions/checkout@v4
 
-      - name: Run Snyk to check critical issues
-        uses: snyk/actions/node@master # Acción agregada
-        continue-on-error: true # Permite que el pipeline siga aunque Snyk encuentre vulnerabilidades, para poder subir el reporte
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          # Se agrega el comando para generar el archivo JSON que necesitas
-          args: --severity-threshold=critical --json-file-output=snyk-results.json
-  
-      - name: Exportar resultados de Snyk como artefactos
-        uses: actions/upload-artifact@v4 # Guion agregado para convertirlo en lista
-        if: always()
-        with:
-          name: Snyk-Vulnerability-Report
-          path: snyk-results.json
-          retention-days: 14
+        - name: Run Snyk to check critical issues
+          uses: snyk/actions/node@master # Acción agregada
+          continue-on-error: true # Permite que el pipeline siga aunque Snyk encuentre vulnerabilidades, para poder subir el reporte
+          env:
+            SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+          with:
+            # Se agrega el comando para generar el archivo JSON que necesitas
+            args: --severity-threshold=critical --json-file-output=snyk-results.json
+    
+        - name: Exportar resultados de Snyk como artefactos
+          uses: actions/upload-artifact@v4 # Guion agregado para convertirlo en lista
+          if: always()
+          with:
+            name: Snyk-Vulnerability-Report
+            path: snyk-results.json
+            retention-days: 14
